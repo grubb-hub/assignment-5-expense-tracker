@@ -1,0 +1,40 @@
+<div class="transactions-container">
+  <h2>My Transactions</h2>
+
+  <div class="actions">
+    <button class="add-btn" (click)="goToAddTransaction()">Add New Transaction</button>
+    <button class="refresh-btn" (click)="refreshTransactions()">Refresh</button>
+    <button class="logout-btn" (click)="logout()">Logout</button>
+  </div>
+
+  <div class="total-section">
+    <h3>Total: ${{ getTotalAmount().toFixed(2) }}</h3>
+  </div>
+
+  <div *ngIf="loading" class="loading">Loading transactions...</div>
+
+  <div *ngIf="!loading && transactions.length === 0" class="no-transactions">
+    No transactions found.
+    <a (click)="goToAddTransaction()" class="link">Add your first transaction</a>
+  </div>
+
+  <div *ngIf="!loading && transactions.length > 0" class="transactions-list">
+    <div class="transaction-header">
+      <span>Date</span>
+      <span>Description</span>
+      <span>Category</span>
+      <span>Amount</span>
+    </div>
+
+    <div
+      *ngFor="let transaction of transactions; trackBy: trackByTransactionId"
+      class="transaction-item"
+      [class.negative]="transaction.amount < 0"
+    >
+      <span>{{ transaction.date ? (transaction.date | date: 'shortDate') : 'No date' }}</span>
+      <span>{{ transaction.description || 'No description' }}</span>
+      <span>{{ transaction.category || 'No category' }}</span>
+      <span class="amount">${{ transaction.amount?.toFixed(2) || '0.00' }}</span>
+    </div>
+  </div>
+</div>
