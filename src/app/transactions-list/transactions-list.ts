@@ -2,11 +2,12 @@ import { Component, OnInit, OnDestroy, NgZone, ChangeDetectorRef } from '@angula
 import { CommonModule } from '@angular/common';
 import { FirebaseService } from '../firebase.service';
 import { Router } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-transactions-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatButtonModule],
   templateUrl: './transactions-list.html',
   styleUrl: './transactions-list.css',
 })
@@ -14,6 +15,7 @@ export class TransactionsListComponent implements OnInit, OnDestroy {
   transactions: any[] = [];
   loading = true;
   private unsubscribeTransactions: (() => void) | null = null;
+  Math = Math;
 
   constructor(
     private firebaseService: FirebaseService,
@@ -72,7 +74,7 @@ export class TransactionsListComponent implements OnInit, OnDestroy {
   }
 
   goToAddTransaction() {
-    this.router.navigate(['/transaction']);
+    this.router.navigate(['/expenses']);
   }
 
   refreshTransactions() {
@@ -98,5 +100,17 @@ export class TransactionsListComponent implements OnInit, OnDestroy {
 
   getTotalAmount(): number {
     return this.transactions.reduce((total, transaction) => total + (transaction.amount || 0), 0);
+  }
+
+  getTypeColor(type?: string): string {
+    if (type === 'expense') return 'warn';
+    if (type === 'transaction') return 'accent';
+    return 'primary';
+  }
+
+  getTypeLabel(type?: string): string {
+    if (type === 'expense') return 'Expense';
+    if (type === 'transaction') return 'Transaction';
+    return 'Unknown';
   }
 }

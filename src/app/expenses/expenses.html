@@ -1,12 +1,13 @@
-<div class="transaction-container">
-  <h2>Add Transaction</h2>
-  <form (ngSubmit)="addTransaction()" #transactionForm="ngForm">
+<div class="expenses-container">
+  <h2>Add Expense or Transaction</h2>
+
+  <form #expenseForm="ngForm">
     <div class="form-group">
       <label for="amount">Amount:</label>
       <input
         type="number"
         id="amount"
-        [(ngModel)]="transaction.amount"
+        [(ngModel)]="expense.amount"
         name="amount"
         step="0.01"
         required
@@ -18,7 +19,7 @@
       <input
         type="text"
         id="description"
-        [(ngModel)]="transaction.description"
+        [(ngModel)]="expense.description"
         name="description"
         required
       />
@@ -26,7 +27,7 @@
 
     <div class="form-group">
       <label for="category">Category:</label>
-      <select id="category" [(ngModel)]="transaction.category" name="category" required>
+      <select id="category" [(ngModel)]="expense.category" name="category" required>
         <option value="">Select Category</option>
         <option value="food">Food</option>
         <option value="transport">Transport</option>
@@ -38,14 +39,21 @@
 
     <div class="form-group">
       <label for="date">Date:</label>
-      <input type="date" id="date" [(ngModel)]="transaction.date" name="date" required />
+      <input type="date" id="date" [(ngModel)]="expense.date" name="date" required />
     </div>
 
-    <button type="submit" [disabled]="!transactionForm.form.valid">Add Transaction</button>
+    <div class="button-group">
+      <button mat-raised-button color="warn" (click)="logAsExpense()" class="btn-expense">
+        Log as Expense
+      </button>
+      <button mat-raised-button color="accent" (click)="logAsTransaction()" class="btn-transaction">
+        Log as Transaction
+      </button>
+    </div>
   </form>
 
   <div class="actions">
-    <button class="view-btn" (click)="viewTransactions()">View All Transactions</button>
-    <button class="logout-btn" (click)="logout()">Logout</button>
+    <button mat-stroked-button (click)="viewTransactions()">View All Transactions</button>
+    <button mat-stroked-button color="warn" (click)="logout()">Logout</button>
   </div>
 </div>

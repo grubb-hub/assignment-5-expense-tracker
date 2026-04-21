@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet, Router } from '@angular/router';
-import { AuthComponent } from './auth/auth';
 import { FirebaseService } from './firebase.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, AuthComponent],
+  imports: [RouterOutlet],
   templateUrl: './app.html'
 })
 export class AppComponent implements OnInit {
@@ -23,7 +22,7 @@ export class AppComponent implements OnInit {
     // Listen for auth state changes and navigate accordingly
     this.firebaseService.auth.onAuthStateChanged((user) => {
       if (user) {
-        this.router.navigate(['/transaction']);
+        this.router.navigate(['/expenses']);
       } else {
         this.router.navigate(['/auth']);
       }

@@ -68,6 +68,11 @@
   color: #495057;
 }
 
+.total-section h3 span.negative {
+  color: #dc3545;
+  font-weight: bold;
+}
+
 .loading, .no-transactions {
   text-align: center;
   padding: 40px;
@@ -92,7 +97,7 @@
 
 .transaction-header {
   display: grid;
-  grid-template-columns: 1fr 2fr 1fr 1fr;
+  grid-template-columns: 1fr 2fr 1fr 1fr 1fr;
   gap: 15px;
   padding: 15px;
   background-color: #f8f9fa;
@@ -102,7 +107,7 @@
 
 .transaction-item {
   display: grid;
-  grid-template-columns: 1fr 2fr 1fr 1fr;
+  grid-template-columns: 1fr 2fr 1fr 1fr 1fr;
   gap: 15px;
   padding: 15px;
   border-bottom: 1px solid #dee2e6;

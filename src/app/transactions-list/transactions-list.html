@@ -8,7 +8,12 @@
   </div>
 
   <div class="total-section">
-    <h3>Total: ${{ getTotalAmount().toFixed(2) }}</h3>
+    <h3>
+      Total:
+      <span [class.negative]="getTotalAmount() < 0"
+        >{{ getTotalAmount() < 0 ? '-' : '+' }}${{ Math.abs(getTotalAmount()).toFixed(2) }}</span
+      >
+    </h3>
   </div>
 
   <div *ngIf="loading" class="loading">Loading transactions...</div>
@@ -23,6 +28,7 @@
       <span>Date</span>
       <span>Description</span>
       <span>Category</span>
+      <span>Type</span>
       <span>Amount</span>
     </div>
 
@@ -34,7 +40,16 @@
       <span>{{ transaction.date ? (transaction.date | date: 'shortDate') : 'No date' }}</span>
       <span>{{ transaction.description || 'No description' }}</span>
       <span>{{ transaction.category || 'No category' }}</span>
-      <span class="amount">${{ transaction.amount?.toFixed(2) || '0.00' }}</span>
+      <span>
+        <button mat-stroked-button [color]="getTypeColor(transaction.type)" disabled>
+          {{ getTypeLabel(transaction.type) }}
+        </button>
+      </span>
+      <span class="amount"
+        >{{ transaction.amount < 0 ? '-' : '+' }}${{
+          Math.abs(transaction.amount).toFixed(2)
+        }}</span
+      >
     </div>
   </div>
 </div>
