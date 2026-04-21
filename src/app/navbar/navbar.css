@@ -1,0 +1,38 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar-title {
+  font-size: 1.3rem;
+  font-weight: 500;
+}
+
+.navbar-spacer {
+  flex: 1 1 auto;
+}
+
+.navbar button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar button.active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+mat-icon {
+  margin-right: 0.3rem;
+}
+
+@media (max-width: 768px) {
+  .navbar button span {
+    display: none;
+  }
+
+  .navbar button mat-icon {
+    margin-right: 0;
+  }
+}
