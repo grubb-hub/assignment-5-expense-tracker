@@ -13,7 +13,7 @@ interface Expense {
   description: string;
   category: string;
   date: string;
-  type: 'expense' | 'transaction';
+  type: 'expense' | 'income';
 }
 
 @Component({
@@ -60,8 +60,8 @@ export class ExpensesComponent {
     await this.submitForm();
   }
 
-  async logAsTransaction() {
-    this.expense.update(e => ({ ...e, type: 'transaction' }));
+  async logAsIncome() {
+    this.expense.update(e => ({ ...e, type: 'income' }));
     await this.submitForm();
   }
 
@@ -70,9 +70,7 @@ export class ExpensesComponent {
       const currentExpense = this.expense();
       const dataToSave: Expense = {
         ...currentExpense,
-        amount: currentExpense.type === 'expense' 
-          ? -Math.abs(currentExpense.amount) 
-          : Math.abs(currentExpense.amount)
+        amount: Math.abs(currentExpense.amount)
       };
 
       await this.firebaseService.addTransaction(dataToSave);

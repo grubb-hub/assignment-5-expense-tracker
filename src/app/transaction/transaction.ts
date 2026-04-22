@@ -10,7 +10,7 @@ interface Transaction {
   description: string;
   category: string;
   date: string;
-  type?: string;
+  type: 'income' | 'expense';
   userId?: string;
 }
 
@@ -43,7 +43,8 @@ export class TransactionComponent implements OnInit, OnDestroy {
     amount: 0,
     description: '',
     category: '',
-    date: this.getTodayDate()
+    date: this.getTodayDate(),
+    type: 'expense'
   });
 
   // ============ LIFECYCLE ============
@@ -68,7 +69,8 @@ export class TransactionComponent implements OnInit, OnDestroy {
       amount: 0,
       description: '',
       category: '',
-      date: this.getTodayDate()
+      date: this.getTodayDate(),
+      type: 'expense'
     });
   }
 

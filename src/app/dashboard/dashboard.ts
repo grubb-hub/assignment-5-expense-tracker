@@ -23,6 +23,12 @@ import { MatIconModule } from '@angular/material/icon';
 export class DashboardComponent {
   pages = [
     {
+      title: 'Analytics',
+      description: 'View spending analytics & budgets',
+      link: '/analytics',
+      icon: 'bar_chart'
+    },
+    {
       title: 'Transactions',
       description: 'View all transactions',
       link: '/transactions',
@@ -39,6 +45,12 @@ export class DashboardComponent {
       description: 'View your expenses',
       link: '/expenses',
       icon: 'trending_down'
+    },
+    {
+      title: 'Profile',
+      description: 'Manage your profile',
+      link: '/profile',
+      icon: 'person'
     },
     {
       title: 'Logout',

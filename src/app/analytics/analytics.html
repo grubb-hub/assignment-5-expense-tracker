@@ -1,0 +1,153 @@
+<div class="analytics-container">
+  <div class="header">
+    <h1>📊 Analytics Dashboard</h1>
+    <button class="back-btn" (click)="goBack()">← Back to Dashboard</button>
+  </div>
+
+  <div *ngIf="loading()" class="loading">Loading analytics...</div>
+
+  <div *ngIf="!loading()" class="analytics-content">
+    <!-- Monthly Summary Cards -->
+    <div class="summary-cards">
+      <div class="card income">
+        <h3>💰 Income</h3>
+        <p class="amount">${{ monthlySummary().income | number: '1.2-2' }}</p>
+        <small>{{ currentMonth() }}</small>
+      </div>
+
+      <div class="card expense">
+        <h3>💸 Expenses</h3>
+        <p class="amount">${{ monthlySummary().expense | number: '1.2-2' }}</p>
+        <small>{{ currentMonth() }}</small>
+      </div>
+
+      <div class="card balance" [ngClass]="monthlySummary().balance >= 0 ? 'positive' : 'negative'">
+        <h3>💳 Balance</h3>
+        <p class="amount">${{ monthlySummary().balance | number: '1.2-2' }}</p>
+        <small>Income - Expenses</small>
+      </div>
+    </div>
+
+    <!-- Category Spending Section -->
+    <div class="section">
+      <h2>Category-wise Spending</h2>
+      <div class="category-list">
+        <div *ngIf="categorySpending().length === 0" class="no-data">
+          No expense data for this month
+        </div>
+
+        <div *ngFor="let item of categorySpending()" class="category-item">
+          <div class="category-name">{{ item.name }}</div>
+          <div class="category-bar">
+            <div
+              class="bar-fill"
+              [style.width.%]="(item.value / (categorySpending()[0]?.value || 1)) * 100"
+            ></div>
+          </div>
+          <div class="category-amount">${{ item.value | number: '1.2-2' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Income vs Expense Comparison -->
+    <div class="section">
+      <h2>Income vs Expenses Comparison</h2>
+      <div class="comparison-bars">
+        <div class="bar-item">
+          <div class="bar-label">Income</div>
+          <div class="bar-container income-bar">
+            <div
+              class="bar-fill income"
+              [style.width.%]="
+                (monthlySummary().income /
+                  Math.max(monthlySummary().income, monthlySummary().expense, 1)) *
+                100
+              "
+            ></div>
+          </div>
+          <div class="bar-value">${{ monthlySummary().income | number: '1.2-2' }}</div>
+        </div>
+
+        <div class="bar-item">
+          <div class="bar-label">Expenses</div>
+          <div class="bar-container expense-bar">
+            <div
+              class="bar-fill expense"
+              [style.width.%]="
+                (monthlySummary().expense /
+                  Math.max(monthlySummary().income, monthlySummary().expense, 1)) *
+                100
+              "
+            ></div>
+          </div>
+          <div class="bar-value">${{ monthlySummary().expense | number: '1.2-2' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Budget Alerts Section -->
+    <div class="section">
+      <h2>⚠️ Budget Alerts</h2>
+      <div class="alerts-container">
+        <div
+          *ngIf="
+            (budgetComparison() | keyvalue).every(
+              (item) => getStatusClass(item.value.percentage) === 'safe'
+            )
+          "
+          class="no-data"
+        >
+          ✅ All budgets are safe!
+        </div>
+
+        <ng-container *ngFor="let item of budgetComparison() | keyvalue">
+          <div
+            *ngIf="getStatusClass(item.value.percentage) !== 'safe'"
+            class="budget-alert"
+            [ngClass]="getStatusClass(item.value.percentage)"
+          >
+            <strong>{{ item.key | titlecase }}</strong>
+            <span class="alert-percentage">{{ item.value.percentage }}%</span>
+            <p class="alert-details">
+              Spent: ${{ item.value.actual | number: '1.2-2' }} / Budget: ${{
+                item.value.budget | number: '1.2-2'
+              }}
+            </p>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- Budget vs Actual Comparison -->
+    <div class="section">
+      <h2>Budget vs Actual Spending</h2>
+      <div class="budget-comparison">
+        <div *ngIf="Object.keys(budgetComparison()).length === 0" class="no-data">
+          No budgets set. Go to Profile to set category budgets.
+        </div>
+
+        <div *ngFor="let item of budgetComparison() | keyvalue" class="budget-item">
+          <div class="budget-header">
+            <span class="budget-name">{{ item.key | titlecase }}</span>
+            <span class="budget-status" [ngClass]="getStatusClass(item.value.percentage)">
+              {{ item.value.percentage }}%
+            </span>
+          </div>
+
+          <div class="budget-bar">
+            <div
+              class="budget-fill"
+              [ngClass]="getStatusClass(item.value.percentage)"
+              [style.width.%]="Math.min(item.value.percentage, 100)"
+            ></div>
+          </div>
+
+          <div class="budget-details">
+            <span class="budget-text">Actual: ${{ item.value.actual | number: '1.2-2' }}</span>
+            <span class="budget-text">Budget: ${{ item.value.budget | number: '1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
