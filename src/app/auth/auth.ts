@@ -37,7 +37,7 @@ export class AuthComponent {
       const user = await this.firebaseService.login(this.email, this.password);
       console.log("✅ Logged in:", user.user.email);
       alert("Login successful");
-      this.router.navigate(['/transaction']);
+      this.router.navigate(['/dashboard']);
     } catch (err: any) {
       console.error("❌ Login error:", err.message);
       alert(err.message);

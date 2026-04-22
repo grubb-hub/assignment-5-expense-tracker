@@ -1,10 +1,14 @@
-<h2>Login / Register</h2>
+<div class="auth-container">
+  <div class="auth-card">
+    <h2>Login / Register</h2>
 
-<input type="email" placeholder="Email" [(ngModel)]="email" />
-<br /><br />
+    <input type="email" placeholder="Email" [(ngModel)]="email" name="email" />
 
-<input type="password" placeholder="Password" [(ngModel)]="password" />
-<br /><br />
+    <input type="password" placeholder="Password" [(ngModel)]="password" name="password" />
 
-<button (click)="login()">Login</button>
-<button (click)="register()">Register</button>
+    <div class="button-group">
+      <button class="login-btn" (click)="login()">Login</button>
+      <button class="register-btn" (click)="register()">Register</button>
+    </div>
+  </div>
+</div>

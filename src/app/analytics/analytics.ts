@@ -5,9 +5,9 @@ import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 
-
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, registerables, ChartOptions } from 'chart.js';
+import { CATEGORIES } from '../constants/categories';
 
 Chart.register(...registerables);
 
@@ -52,26 +52,29 @@ export class AnalyticsComponent implements OnInit {
   transactions = signal<Transaction[]>([]);
   loading = signal(true);
   userProfile = signal<any>(null);
-  Math = Math; // Expose Math to template
-  Object = Object; // Expose Object to template
-  
-pieChartOptions: ChartOptions<'pie'> = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'bottom'
+
+  Math = Math;
+  Object = Object;
+
+  // ✅ PIE CHART CONFIG
+  pieChartOptions: ChartOptions<'pie'> = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'bottom'
+      }
     }
-  }
-};
+  };
 
-pieChartType: 'pie' = 'pie';
+  pieChartType: 'pie' = 'pie';
 
-  // Computed analytics data
+  // ---------------- CURRENT MONTH ----------------
   currentMonth = computed(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   });
 
+  // ---------------- SUMMARY ----------------
   monthlySummary = computed(() => {
     const month = this.currentMonth();
     const trans = this.transactions();
@@ -91,6 +94,7 @@ pieChartType: 'pie' = 'pie';
     };
   });
 
+  // ---------------- CATEGORY SPENDING (FIXED) ----------------
   categorySpending = computed(() => {
     const month = this.currentMonth();
     const trans = this.transactions();
@@ -99,7 +103,13 @@ pieChartType: 'pie' = 'pie';
     trans
       .filter(t => t.type === 'expense' && t.date.startsWith(month))
       .forEach(t => {
-        const cat = t.category || 'Other';
+
+        // ✅ FIX: normalize category properly using your constants
+        const cat =
+          CATEGORIES.find(c =>
+            c.value === (t.category || '').toLowerCase().trim()
+          )?.value || 'other';
+
         categories[cat] = (categories[cat] || 0) + (t.amount || 0);
       });
 
@@ -109,11 +119,12 @@ pieChartType: 'pie' = 'pie';
         value: Math.round(value * 100) / 100
       }))
       .sort((a, b) => b.value - a.value);
-      
+
     console.log('📈 Category spending:', result);
     return result;
   });
 
+  // ---------------- BUDGET ----------------
   budgetComparison = computed(() => {
     const month = this.currentMonth();
     const trans = this.transactions();
@@ -128,10 +139,14 @@ pieChartType: 'pie' = 'pie';
       other: 0
     };
 
-
     Object.entries(budgets).forEach(([category, budget]) => {
       const actual = trans
-        .filter(t => t.type === 'expense' && t.date.startsWith(month) && t.category?.toLowerCase() === category)
+        .filter(
+          t =>
+            t.type === 'expense' &&
+            t.date.startsWith(month) &&
+            t.category?.toLowerCase() === category
+        )
         .reduce((sum, t) => sum + (t.amount || 0), 0);
 
       const budgetNum = budget as number;
@@ -140,17 +155,17 @@ pieChartType: 'pie' = 'pie';
       comparison[category] = {
         budget: budgetNum,
         actual: Math.round(actual * 100) / 100,
-        percentage: percentage
+        percentage
       };
     });
 
     return comparison;
   });
 
-
-  
+  // ---------------- PIE DATA ----------------
   chartData = computed(() => {
     const spending = this.categorySpending();
+
     return {
       labels: spending.map(s => s.name),
       datasets: [
@@ -171,22 +186,7 @@ pieChartType: 'pie' = 'pie';
     };
   });
 
-  incomeExpenseData = computed(() => {
-    const summary = this.monthlySummary();
-    return {
-      labels: ['Income', 'Expense'],
-      datasets: [
-        {
-          label: `${this.currentMonth()} Summary`,
-          data: [summary.income, summary.expense],
-          backgroundColor: ['#4BC0C0', '#FF6384'],
-          borderColor: '#fff',
-          borderWidth: 2
-        }
-      ]
-    };
-  });
-
+  // ---------------- INIT ----------------
   ngOnInit() {
     const user = this.firebaseService.getCurrentUser();
     if (!user) {
@@ -194,56 +194,45 @@ pieChartType: 'pie' = 'pie';
       return;
     }
 
-    // Fetch user profile
-    this.firebaseService.getUserProfile().then((profile: any) => {
+    this.firebaseService.getUserProfile().then(profile => {
       this.userProfile.set(profile);
     });
 
-    // Subscribe to transactions
     this.firebaseService.getTransactions((trans: any[]) => {
       const today = new Date().toISOString().split('T')[0];
-      
+
       const mappedTransactions = trans.map(t => {
-        // Ensure proper date format (YYYY-MM-DD)
         let dateStr = t.date || today;
         if (!dateStr.match(/\d{4}-\d{2}-\d{2}/)) {
-          dateStr = today; // Default to today if date is invalid
+          dateStr = today;
         }
-        
+
         return {
           id: t.id,
-          amount: t.amount ? Math.abs(t.amount) : 0,
-          category: t.category || 'Other',
+          amount: Number(t.amount) || 0,
+          category: (t.category || 'other').toLowerCase().trim(),
           date: dateStr,
-          type: t.type || 'expense',
+          type: (t.type || 'expense').toLowerCase().trim() as 'expense' | 'income',
           description: t.description || '',
           userId: t.userId
         };
       });
-      
-      console.log('📊 Analytics transactions loaded:', mappedTransactions.length);
-      console.log('🔍 Sample transactions:', mappedTransactions.slice(0, 3));
-      console.log('📅 Current month:', this.currentMonth());
-      
-      // Log filtering
-      const thisMonth = mappedTransactions.filter(t => t.date.startsWith(this.currentMonth()));
-      console.log('✅ This month transactions:', thisMonth.length);
-      
+
       this.transactions.set(mappedTransactions);
       this.loading.set(false);
-      
-      // Show budget alerts
+
       setTimeout(() => this.checkBudgetAlerts(), 500);
     });
   }
 
   checkBudgetAlerts() {
     const status = this.budgetComparison();
+
     Object.entries(status).forEach(([category, info]) => {
       if (info.percentage >= 100) {
-        console.warn(`🔴 ${category.toUpperCase()} budget EXCEEDED! Spent: $${info.actual} / Budget: $${info.budget}`);
+        console.warn(`🔴 ${category} budget EXCEEDED`);
       } else if (info.percentage >= 80) {
-        console.warn(`🟡 ${category.toUpperCase()} budget at ${info.percentage}% - Spent: $${info.actual} / Budget: $${info.budget}`);
+        console.warn(`🟡 ${category} at ${info.percentage}%`);
       }
     });
   }

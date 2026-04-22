@@ -1,0 +1,72 @@
+.auth-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #1e1e2f, #2c3e50);
+  font-family: Arial, sans-serif;
+}
+
+.auth-card {
+  width: 320px;
+  padding: 30px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+.auth-card h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.auth-card input {
+  width: 100%;
+  padding: 10px 12px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.auth-card input:focus {
+  border-color: #4bc0c0;
+  box-shadow: 0 0 5px rgba(75,192,192,0.4);
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+  gap: 10px;
+}
+
+button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.login-btn {
+  background: #36a2eb;
+  color: white;
+}
+
+.login-btn:hover {
+  background: #1e88e5;
+}
+
+.register-btn {
+  background: #4bc0c0;
+  color: white;
+}
+
+.register-btn:hover {
+  background: #26a69a;
+}

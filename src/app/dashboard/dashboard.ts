@@ -29,22 +29,22 @@ export class DashboardComponent {
       icon: 'bar_chart'
     },
     {
-      title: 'Transactions',
+      title: 'My Transactions',
       description: 'View all transactions',
       link: '/transactions',
       icon: 'list'
     },
-    // {
-    //   title: 'Add Transaction',
-    //   description: 'Create a new transaction',
-    //   link: '/transaction',
-    //   icon: 'add_circle'
-    // },
     {
-      title: 'Expenses',
-      description: 'View your expenses',
-      link: '/expenses',
-      icon: 'trending_down'
+      title: 'Add Transaction',
+      description: 'Create a new transaction',
+      link: '/transaction',
+      icon: 'add_circle'
+    },
+    {
+      title: 'Manage Transaction',
+      description: 'Edit or delete existing transactions',
+      link: '/transaction',
+      icon: 'edit'
     },
     {
       title: 'Profile',
