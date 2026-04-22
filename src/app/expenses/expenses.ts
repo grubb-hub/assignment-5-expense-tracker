@@ -68,10 +68,10 @@ export class ExpensesComponent {
   private async submitForm() {
     try {
       const currentExpense = this.expense();
-      const dataToSave: Expense = {
-        ...currentExpense,
-        amount: Math.abs(currentExpense.amount)
-      };
+const dataToSave: Expense = {
+  ...currentExpense,
+  amount: currentExpense.amount
+};
 
       await this.firebaseService.addTransaction(dataToSave);
       const typeLabel = currentExpense.type.charAt(0).toUpperCase() + currentExpense.type.slice(1);

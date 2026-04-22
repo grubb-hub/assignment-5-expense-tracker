@@ -5,6 +5,12 @@ import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 
+
+import { BaseChartDirective } from 'ng2-charts';
+import { Chart, registerables, ChartOptions } from 'chart.js';
+
+Chart.register(...registerables);
+
 interface Transaction {
   id: string;
   amount: number;
@@ -35,7 +41,7 @@ interface BudgetComparison {
 @Component({
   selector: 'app-analytics',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule],
+  imports: [CommonModule, MatCardModule, MatButtonModule, BaseChartDirective],
   templateUrl: './analytics.html',
   styleUrl: './analytics.css'
 })
@@ -48,6 +54,17 @@ export class AnalyticsComponent implements OnInit {
   userProfile = signal<any>(null);
   Math = Math; // Expose Math to template
   Object = Object; // Expose Object to template
+  
+pieChartOptions: ChartOptions<'pie'> = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'bottom'
+    }
+  }
+};
+
+pieChartType: 'pie' = 'pie';
 
   // Computed analytics data
   currentMonth = computed(() => {
@@ -111,6 +128,7 @@ export class AnalyticsComponent implements OnInit {
       other: 0
     };
 
+
     Object.entries(budgets).forEach(([category, budget]) => {
       const actual = trans
         .filter(t => t.type === 'expense' && t.date.startsWith(month) && t.category?.toLowerCase() === category)
@@ -129,6 +147,8 @@ export class AnalyticsComponent implements OnInit {
     return comparison;
   });
 
+
+  
   chartData = computed(() => {
     const spending = this.categorySpending();
     return {

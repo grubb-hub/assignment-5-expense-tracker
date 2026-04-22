@@ -98,3 +98,11 @@
 .full-width {
   width: 100%;
 }
+
+.expense {
+  color: #dc3545;
+}
+
+.income {
+  color: #28a745;
+}

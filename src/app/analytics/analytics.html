@@ -49,6 +49,17 @@
       </div>
     </div>
 
+    <!-- ✅ PIE CHART (added, nothing removed) -->
+<canvas
+  *ngIf="categorySpending().length > 0"
+  baseChart
+  [data]="chartData()"
+  [type]="pieChartType"
+  [options]="pieChartOptions"
+  style="max-width: 400px; margin: 30px auto; display: block;"
+>
+</canvas>
+
     <!-- Income vs Expense Comparison -->
     <div class="section">
       <h2>Income vs Expenses Comparison</h2>
