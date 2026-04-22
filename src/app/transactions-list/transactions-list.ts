@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FirebaseService } from '../firebase.service';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
+import { CATEGORIES } from '../constants/caategories';
 
 @Component({
   selector: 'app-transactions-list',
@@ -24,6 +25,11 @@ export class TransactionsListComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef
   ) {}
 
+  getCategoryColor(category: string): string {
+  const cat = CATEGORIES.find(c => c.value === category);
+  return cat ? cat.color : '#999';
+}
+  
   ngOnInit() {
     this.setupTransactionsListener();
   }

@@ -26,15 +26,18 @@
     </div>
 
     <div class="form-group">
-      <label for="category">Category:</label>
-      <select id="category" [(ngModel)]="expense.category" name="category" required>
-        <option value="">Select Category</option>
-        <option value="food">Food</option>
-        <option value="transport">Transport</option>
-        <option value="entertainment">Entertainment</option>
-        <option value="utilities">Utilities</option>
-        <option value="other">Other</option>
-      </select>
+      <label>Category:</label>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-select [(ngModel)]="expense.category" name="category" required>
+          <mat-option *ngFor="let cat of categories" [value]="cat.value">
+            <div class="option-row">
+              <span class="color-dot" [style.background]="cat.color"></span>
+              {{ cat.label }}
+            </div>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
 
     <div class="form-group">

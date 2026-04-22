@@ -3,15 +3,21 @@ import { FormsModule } from '@angular/forms';
 import { FirebaseService } from '../firebase.service';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
+import { CommonModule } from '@angular/common';
+import { CATEGORIES } from '../constants/caategories';
+import {MatSelectModule} from '@angular/material/select';
+import {MatFormFieldModule} from '@angular/material/form-field';
 
 @Component({
   selector: 'app-expenses',
   standalone: true,
-  imports: [FormsModule, MatButtonModule],
+  imports: [FormsModule, MatButtonModule, CommonModule, MatSelectModule, MatFormFieldModule],
   templateUrl: './expenses.html',
   styleUrl: './expenses.css',
 })
 export class ExpensesComponent {
+  categories = CATEGORIES;
+
   expense = {
     amount: 0,
     description: '',
@@ -69,4 +75,5 @@ export class ExpensesComponent {
   viewTransactions() {
     this.router.navigate(['/transactions']);
   }
+
 }

@@ -1,25 +1,32 @@
 <div class="dashboard-container">
+  <!-- Header -->
   <div class="dashboard-header">
-    <h1>Dashboard</h1>
-    <p>Welcome to your Expense Tracker</p>
+    <div>
+      <h1>Dashboard</h1>
+      <h2></h2>
+      <p>Welcome to your Expense Tracker</p>
+    </div>
+
+    <button mat-stroked-button color="primary">Logout</button>
   </div>
 
-  <mat-grid-list cols="2" rowHeight="200px" class="dashboard-grid">
-    <mat-grid-tile *ngFor="let page of pages" class="dashboard-tile">
-      <mat-card class="dashboard-card">
-        <mat-card-header>
-          <div class="card-icon">
-            <mat-icon>{{ page.icon }}</mat-icon>
-          </div>
-        </mat-card-header>
-        <mat-card-content>
-          <h2>{{ page.title }}</h2>
-          <p>{{ page.description }}</p>
-        </mat-card-content>
-        <mat-card-actions>
-          <button mat-raised-button color="primary" [routerLink]="page.link">Go</button>
-        </mat-card-actions>
-      </mat-card>
-    </mat-grid-tile>
-  </mat-grid-list>
+  <!-- Cards Grid -->
+  <div class="dashboard-grid">
+    <mat-card class="dashboard-card" *ngFor="let page of pages" [routerLink]="page.link">
+      <mat-card-header>
+        <div class="card-icon">
+          <mat-icon>{{ page.icon }}</mat-icon>
+        </div>
+      </mat-card-header>
+
+      <mat-card-content>
+        <h2>{{ page.title }}</h2>
+        <p>{{ page.description }}</p>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-raised-button color="primary">Open</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
 </div>

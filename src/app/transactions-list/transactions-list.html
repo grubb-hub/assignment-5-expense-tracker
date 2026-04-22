@@ -3,7 +3,7 @@
 
   <div class="actions">
     <button class="add-btn" (click)="goToAddTransaction()">Add New Transaction</button>
-    <button class="refresh-btn" (click)="refreshTransactions()">Refresh</button>
+    <!-- <button class="refresh-btn" (click)="refreshTransactions()">Refresh</button> -->
     <button class="logout-btn" (click)="logout()">Logout</button>
   </div>
 
@@ -39,7 +39,11 @@
     >
       <span>{{ transaction.date ? (transaction.date | date: 'shortDate') : 'No date' }}</span>
       <span>{{ transaction.description || 'No description' }}</span>
-      <span>{{ transaction.category || 'No category' }}</span>
+      <span class="category-cell">
+        <span class="color-dot" [style.background]="getCategoryColor(transaction.category)"></span>
+
+        {{ transaction.category || 'No category' }}
+      </span>
       <span>
         <button mat-stroked-button [color]="getTypeColor(transaction.type)" disabled>
           {{ getTypeLabel(transaction.type) }}
