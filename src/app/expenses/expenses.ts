@@ -1,12 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy, ChangeDetectionStrategy, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FirebaseService } from '../firebase.service';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { CATEGORIES } from '../constants/caategories';
-import {MatSelectModule} from '@angular/material/select';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+
+interface Expense {
+  amount: number;
+  description: string;
+  category: string;
+  date: string;
+  type: 'expense' | 'transaction';
+}
 
 @Component({
   selector: 'app-expenses',
@@ -14,66 +22,77 @@ import {MatFormFieldModule} from '@angular/material/form-field';
   imports: [FormsModule, MatButtonModule, CommonModule, MatSelectModule, MatFormFieldModule],
   templateUrl: './expenses.html',
   styleUrl: './expenses.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ExpensesComponent {
+  private firebaseService = inject(FirebaseService);
+  private router = inject(Router);
+
   categories = CATEGORIES;
 
-  expense = {
+  // ============ FORM MODEL ============
+  expense = signal<Expense>({
     amount: 0,
     description: '',
     category: '',
-    date: new Date().toISOString().split('T')[0],
+    date: this.getTodayDate(),
     type: 'expense'
-  };
+  });
 
-  constructor(
-    private firebaseService: FirebaseService,
-    private router: Router
-  ) {}
+  // ============ HELPERS ============
+  private getTodayDate(): string {
+    return new Date().toISOString().split('T')[0];
+  }
 
+  private resetForm(): void {
+    this.expense.set({
+      amount: 0,
+      description: '',
+      category: '',
+      date: this.getTodayDate(),
+      type: 'expense'
+    });
+  }
+
+  // ============ CREATE ============
   async logAsExpense() {
-    this.expense.type = 'expense';
+    this.expense.update(e => ({ ...e, type: 'expense' }));
     await this.submitForm();
   }
 
   async logAsTransaction() {
-    this.expense.type = 'transaction';
+    this.expense.update(e => ({ ...e, type: 'transaction' }));
     await this.submitForm();
   }
 
   private async submitForm() {
     try {
-      // Make amount negative for expenses
-      const dataToSave = {
-        ...this.expense,
-        amount: this.expense.type === 'expense' ? -Math.abs(this.expense.amount) : Math.abs(this.expense.amount)
+      const currentExpense = this.expense();
+      const dataToSave: Expense = {
+        ...currentExpense,
+        amount: currentExpense.type === 'expense' 
+          ? -Math.abs(currentExpense.amount) 
+          : Math.abs(currentExpense.amount)
       };
-      
+
       await this.firebaseService.addTransaction(dataToSave);
-      const typeLabel = this.expense.type.charAt(0).toUpperCase() + this.expense.type.slice(1);
+      const typeLabel = currentExpense.type.charAt(0).toUpperCase() + currentExpense.type.slice(1);
       alert(`${typeLabel} added successfully!`);
-      
-      // Reset form
-      this.expense = {
-        amount: 0,
-        description: '',
-        category: '',
-        date: new Date().toISOString().split('T')[0],
-        type: 'expense'
-      };
+
+      this.resetForm();
     } catch (error) {
       console.error('Error adding item:', error);
       alert('Error adding item');
     }
   }
 
-  logout() {
-    this.firebaseService.logout();
-    this.router.navigate(['/auth']);
-  }
-
+  // ============ NAVIGATION ============
   viewTransactions() {
     this.router.navigate(['/transactions']);
   }
 
+  logout() {
+    this.firebaseService.logout();
+    this.router.navigate(['/auth']);
+  }
 }

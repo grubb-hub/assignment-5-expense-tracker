@@ -1,10 +1,25 @@
 import { Injectable } from '@angular/core';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, addDoc, getDocs, onSnapshot, Unsubscribe } from 'firebase/firestore';
-import { firebaseConfig } from './firebase.config';
-import {  onAuthStateChanged } from 'firebase/auth';
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  onSnapshot,
+  Unsubscribe,
+  doc,
+  updateDoc,
+  deleteDoc
+} from 'firebase/firestore';
 
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { firebaseConfig } from './firebase.config';
+
+import {
+  getAuth,
+  onAuthStateChanged,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut
+} from 'firebase/auth';
 
 @Injectable({
   providedIn: 'root'
@@ -18,44 +33,38 @@ export class FirebaseService {
   public auth = getAuth(this.app);
 
   constructor() {
-  const auth = getAuth(this.app);
-
-  onAuthStateChanged(auth, (user) => {
-    this.currentUser = user;
-    console.log("👤 Auth state updated:", user);
-  });
-}
+    onAuthStateChanged(this.auth, (user) => {
+      this.currentUser = user;
+      console.log('👤 Auth state updated:', user);
+    });
+  }
 
   // ---------------- FIRESTORE ----------------
 
-async addTransaction(data: any) {
+  async addTransaction(data: any) {
+    const user = this.currentUser;
 
-  const auth = getAuth(this.app);
-  const user = auth.currentUser;
+    console.log('🔥 currentUser:', user);
 
-  console.log("🔥 currentUser:", user);
+    if (!user) {
+      console.error('❌ No user found when saving!');
+      return;
+    }
 
-  if (!user) {
-    console.error("❌ No user found when saving!");
-    return;
+    const ref = collection(this.db, 'transactions');
+
+    return await addDoc(ref, {
+      ...data,
+      userId: user.uid
+    });
   }
 
-  const ref = collection(this.db, 'transactions');
-
-  return await addDoc(ref, {
-    ...data,
-    userId: user.uid
-  });
-}
-
+  // REAL-TIME READ (per user)
   getTransactions(callback: (transactions: any[]) => void): Unsubscribe {
     const ref = collection(this.db, 'transactions');
 
-    // Set up real-time listener
     const unsubscribe = onSnapshot(ref, (snapshot) => {
-      // Get current user at the time of the snapshot
-      const auth = getAuth(this.app);
-      const user = auth.currentUser;
+      const user = this.currentUser;
 
       if (!user) {
         callback([]);
@@ -67,12 +76,26 @@ async addTransaction(data: any) {
           id: doc.id,
           ...doc.data()
         }))
-        .filter((transaction: any) => transaction.userId === user.uid);
+        .filter((t: any) => t.userId === user.uid);
 
       callback(transactions);
     });
 
     return unsubscribe;
+  }
+
+  // ---------------- UPDATE ----------------
+
+  async updateTransaction(id: string, data: any) {
+    const ref = doc(this.db, 'transactions', id);
+    return await updateDoc(ref, data);
+  }
+
+  // ---------------- DELETE ----------------
+
+  async deleteTransaction(id: string) {
+    const ref = doc(this.db, 'transactions', id);
+    return await deleteDoc(ref);
   }
 
   // ---------------- AUTH ----------------
@@ -90,6 +113,6 @@ async addTransaction(data: any) {
   }
 
   getCurrentUser() {
-  return this.auth.currentUser;
-}
+    return this.auth.currentUser;
+  }
 }
