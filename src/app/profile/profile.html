@@ -1,0 +1,129 @@
+<div class="profile-container">
+  <h2>My Profile</h2>
+
+  <div *ngIf="loading()">Loading...</div>
+
+  <form *ngIf="!loading()">
+    <!-- NAME -->
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" [value]="profile().name" (input)="updateName($event.target.value)" />
+    </div>
+
+    <!-- EMAIL -->
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" [value]="profile().email" disabled />
+    </div>
+
+    <h3>Category Budgets</h3>
+
+    <!-- BUDGET STATUS ALERTS -->
+    <div
+      *ngIf="budgetStatus()['food']?.status !== 'safe'"
+      class="budget-alert"
+      [ngClass]="budgetStatus()['food']?.status"
+    >
+      <strong>Food:</strong> {{ budgetStatus()['food']?.percentage }}% ({{
+        budgetStatus()['food']?.spent | currency
+      }}
+      / {{ budgetStatus()['food']?.budget | currency }})
+    </div>
+    <div
+      *ngIf="budgetStatus()['transport']?.status !== 'safe'"
+      class="budget-alert"
+      [ngClass]="budgetStatus()['transport']?.status"
+    >
+      <strong>Transport:</strong> {{ budgetStatus()['transport']?.percentage }}% ({{
+        budgetStatus()['transport']?.spent | currency
+      }}
+      / {{ budgetStatus()['transport']?.budget | currency }})
+    </div>
+    <div
+      *ngIf="budgetStatus()['entertainment']?.status !== 'safe'"
+      class="budget-alert"
+      [ngClass]="budgetStatus()['entertainment']?.status"
+    >
+      <strong>Entertainment:</strong> {{ budgetStatus()['entertainment']?.percentage }}% ({{
+        budgetStatus()['entertainment']?.spent | currency
+      }}
+      / {{ budgetStatus()['entertainment']?.budget | currency }})
+    </div>
+    <div
+      *ngIf="budgetStatus()['utilities']?.status !== 'safe'"
+      class="budget-alert"
+      [ngClass]="budgetStatus()['utilities']?.status"
+    >
+      <strong>Utilities:</strong> {{ budgetStatus()['utilities']?.percentage }}% ({{
+        budgetStatus()['utilities']?.spent | currency
+      }}
+      / {{ budgetStatus()['utilities']?.budget | currency }})
+    </div>
+    <div
+      *ngIf="budgetStatus()['other']?.status !== 'safe'"
+      class="budget-alert"
+      [ngClass]="budgetStatus()['other']?.status"
+    >
+      <strong>Other:</strong> {{ budgetStatus()['other']?.percentage }}% ({{
+        budgetStatus()['other']?.spent | currency
+      }}
+      / {{ budgetStatus()['other']?.budget | currency }})
+    </div>
+
+    <!-- FOOD -->
+    <div class="form-group">
+      <label>Food</label>
+      <input
+        type="number"
+        [value]="profile().budgets.food"
+        (input)="updateBudget('food', $event.target.value)"
+      />
+    </div>
+
+    <!-- TRANSPORT -->
+    <div class="form-group">
+      <label>Transport</label>
+      <input
+        type="number"
+        [value]="profile().budgets.transport"
+        (input)="updateBudget('transport', $event.target.value)"
+      />
+    </div>
+
+    <!-- ENTERTAINMENT -->
+    <div class="form-group">
+      <label>Entertainment</label>
+      <input
+        type="number"
+        [value]="profile().budgets.entertainment"
+        (input)="updateBudget('entertainment', $event.target.value)"
+      />
+    </div>
+
+    <!-- UTILITIES -->
+    <div class="form-group">
+      <label>Utilities</label>
+      <input
+        type="number"
+        [value]="profile().budgets.utilities"
+        (input)="updateBudget('utilities', $event.target.value)"
+      />
+    </div>
+
+    <!-- OTHER -->
+    <div class="form-group">
+      <label>Other</label>
+      <input
+        type="number"
+        [value]="profile().budgets.other"
+        (input)="updateBudget('other', $event.target.value)"
+      />
+    </div>
+
+    <!-- SAVE -->
+    <button type="button" (click)="saveProfile()">Save Profile</button>
+  </form>
+
+  <!-- LOGOUT -->
+  <button (click)="logout()">Logout</button>
+</div>

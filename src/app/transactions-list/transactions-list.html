@@ -1,29 +1,52 @@
 <div class="transactions-container">
   <h2>My Transactions</h2>
 
+  <!-- ACTIONS -->
   <div class="actions">
-    <button class="add-btn" (click)="goToAddTransaction()">Add New Transaction</button>
-    <!-- <button class="refresh-btn" (click)="refreshTransactions()">Refresh</button> -->
+    <button class="add-btn" (click)="goToAddTransaction()">Add New</button>
     <button class="logout-btn" (click)="logout()">Logout</button>
   </div>
 
+  <!-- 🔍 FILTERS -->
+  <div class="filters">
+    <input type="text" placeholder="Search description..." [(ngModel)]="searchText" />
+
+    <select [(ngModel)]="selectedCategory">
+      <option value="">All Categories</option>
+      <option *ngFor="let cat of CATEGORIES" [value]="cat.value">
+        {{ cat.label }}
+      </option>
+    </select>
+
+    <input type="number" placeholder="Min $" [(ngModel)]="minAmount" />
+    <input type="number" placeholder="Max $" [(ngModel)]="maxAmount" />
+
+    <input type="date" [(ngModel)]="startDate" />
+    <input type="date" [(ngModel)]="endDate" />
+
+    <button (click)="clearFilters()">Clear</button>
+  </div>
+
+  <!-- TOTAL -->
   <div class="total-section">
     <h3>
       Total:
-      <span [class.negative]="getTotalAmount() < 0"
-        >{{ getTotalAmount() < 0 ? '-' : '+' }}${{ Math.abs(getTotalAmount()).toFixed(2) }}</span
-      >
+      <span [class.negative]="getTotalAmount() < 0">
+        {{ getTotalAmount() < 0 ? '-' : '+' }}${{ Math.abs(getTotalAmount()).toFixed(2) }}
+      </span>
     </h3>
   </div>
 
+  <!-- LOADING -->
   <div *ngIf="loading" class="loading">Loading transactions...</div>
 
-  <div *ngIf="!loading && transactions.length === 0" class="no-transactions">
-    No transactions found.
-    <a (click)="goToAddTransaction()" class="link">Add your first transaction</a>
+  <!-- EMPTY -->
+  <div *ngIf="!loading && getFilteredTransactions().length === 0" class="no-transactions">
+    No matching transactions.
   </div>
 
-  <div *ngIf="!loading && transactions.length > 0" class="transactions-list">
+  <!-- LIST -->
+  <div *ngIf="!loading && getFilteredTransactions().length > 0" class="transactions-list">
     <div class="transaction-header">
       <span>Date</span>
       <span>Description</span>
@@ -33,27 +56,33 @@
     </div>
 
     <div
-      *ngFor="let transaction of transactions; trackBy: trackByTransactionId"
+      *ngFor="let transaction of getFilteredTransactions(); trackBy: trackByTransactionId"
       class="transaction-item"
       [class.negative]="transaction.amount < 0"
     >
-      <span>{{ transaction.date ? (transaction.date | date: 'shortDate') : 'No date' }}</span>
-      <span>{{ transaction.description || 'No description' }}</span>
+      <span>
+        {{ transaction.date ? (transaction.date | date: 'shortDate') : 'No date' }}
+      </span>
+
+      <span>
+        {{ transaction.description || 'No description' }}
+      </span>
+
       <span class="category-cell">
         <span class="color-dot" [style.background]="getCategoryColor(transaction.category)"></span>
 
         {{ transaction.category || 'No category' }}
       </span>
+
       <span>
         <button mat-stroked-button [color]="getTypeColor(transaction.type)" disabled>
           {{ getTypeLabel(transaction.type) }}
         </button>
       </span>
-      <span class="amount"
-        >{{ transaction.amount < 0 ? '-' : '+' }}${{
-          Math.abs(transaction.amount).toFixed(2)
-        }}</span
-      >
+
+      <span class="amount">
+        {{ transaction.amount < 0 ? '-' : '+' }}${{ Math.abs(transaction.amount).toFixed(2) }}
+      </span>
     </div>
   </div>
 </div>

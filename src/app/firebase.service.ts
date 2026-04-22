@@ -8,8 +8,11 @@ import {
   Unsubscribe,
   doc,
   updateDoc,
-  deleteDoc
+  deleteDoc,
+
 } from 'firebase/firestore';
+
+import {setDoc, getDoc, } from 'firebase/firestore';
 
 import { firebaseConfig } from './firebase.config';
 
@@ -21,10 +24,24 @@ import {
   signOut
 } from 'firebase/auth';
 
+type UserProfile = {
+  name: string;
+  email: string;
+  budgets: {
+    food: number;
+    transport: number;
+    entertainment: number;
+    utilities: number;
+    other: number;
+  };
+};
+
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseService {
+
+
 
   currentUser: any = null;
 
@@ -115,4 +132,47 @@ export class FirebaseService {
   getCurrentUser() {
     return this.auth.currentUser;
   }
+
+
+  async saveUserProfile(data: UserProfile) {
+  const user = this.auth.currentUser;
+
+  if (!user) throw new Error('No user');
+
+  const ref = doc(this.db, 'users', user.uid);
+
+  return setDoc(ref, {
+    ...data,
+    email: user.email
+  }, { merge: true });
+}
+
+async getUserProfile() {
+  const user = this.auth.currentUser;
+
+  if (!user) return null;
+
+  const ref = doc(this.db, 'users', user.uid);
+  const snapshot = await getDoc(ref);
+
+  if (!snapshot.exists()) {
+    return {
+      name: '',
+      email: user.email || '',
+      monthlyBudget: 0
+    };
+  }
+
+  return snapshot.data();
+}
+
+async updateUserProfile(data: any) {
+  const user = this.auth.currentUser;
+
+  if (!user) throw new Error('No user');
+
+  const ref = doc(this.db, 'users', user.uid);
+
+  return await updateDoc(ref, data);
+}
 }
