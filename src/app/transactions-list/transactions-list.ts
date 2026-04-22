@@ -146,21 +146,22 @@ export class TransactionsListComponent implements OnInit, OnDestroy {
   }
 
   getTotalAmount(): number {
-    return this.getFilteredTransactions().reduce(
-      (total, t) => total + (t.amount || 0),
-      0
-    );
+    return this.getFilteredTransactions().reduce((total, t) => {
+      if (t.type === 'income') return total + t.amount;
+      if (t.type === 'expense') return total - t.amount;
+      return total;
+    }, 0);
   }
 
   getTypeColor(type?: string): string {
+    if (type === 'income') return 'primary';
     if (type === 'expense') return 'warn';
-    if (type === 'transaction') return 'accent';
-    return 'primary';
+    return 'basic';
   }
 
   getTypeLabel(type?: string): string {
+    if (type === 'income') return 'Income';
     if (type === 'expense') return 'Expense';
-    if (type === 'transaction') return 'Transaction';
     return 'Unknown';
   }
 }

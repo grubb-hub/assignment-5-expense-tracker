@@ -65,24 +65,29 @@ export class ExpensesComponent {
     await this.submitForm();
   }
 
-  private async submitForm() {
-    try {
-      const currentExpense = this.expense();
-const dataToSave: Expense = {
-  ...currentExpense,
-  amount: currentExpense.amount
-};
+private async submitForm() {
+  try {
+    const currentExpense = this.expense();
 
-      await this.firebaseService.addTransaction(dataToSave);
-      const typeLabel = currentExpense.type.charAt(0).toUpperCase() + currentExpense.type.slice(1);
-      alert(`${typeLabel} added successfully!`);
+    const dataToSave: Expense = {
+      ...currentExpense,
+      amount: Number(currentExpense.amount),
+      type: currentExpense.type
+    };
 
-      this.resetForm();
-    } catch (error) {
-      console.error('Error adding item:', error);
-      alert('Error adding item');
-    }
+    await this.firebaseService.addTransaction(dataToSave);
+
+    const typeLabel =
+      currentExpense.type === 'income' ? 'Income' : 'Expense';
+
+    alert(`${typeLabel} added successfully!`);
+
+    this.resetForm();
+  } catch (error) {
+    console.error('Error adding item:', error);
+    alert('Error adding item');
   }
+}
 
   // ============ NAVIGATION ============
   viewTransactions() {

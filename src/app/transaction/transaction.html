@@ -149,8 +149,8 @@
             <p>{{ t.category }} | {{ t.date }}</p>
           </div>
 
-          <div class="transaction-amount" [class.expense]="t.amount < 0">
-            {{ t.amount > 0 ? '+' : '' }}{{ t.amount }}
+          <div class="transaction-amount" [class.expense]="t.type === 'expense'">
+            {{ t.type === 'income' ? '+' : '-' }}{{ t.amount }}
           </div>
 
           <div class="buttons">
